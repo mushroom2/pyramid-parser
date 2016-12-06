@@ -1,0 +1,7 @@
+${pricefrom}
+ ;
+${priceto}
+
+<p>
+    ${pars}
+</p>
