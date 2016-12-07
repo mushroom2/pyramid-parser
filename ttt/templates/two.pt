@@ -26,12 +26,9 @@
   </head>
 
   <body>
-  <div id="welcome">
-    Hello!
-  </div>
 
   <div id="myform">
-  <form class="form-inline" method="POST" action="/two/">
+  <form class="form-inline" method="POST" action="/">
   <div class="form-group">
     <input type="text" class="form-control" id="exampleInputName2" name="pricefrom" placeholder="Price From">
   </div>

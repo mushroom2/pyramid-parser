@@ -5,7 +5,7 @@ db.sqlite3
 *.ini
 *.log
 *.pid
-.egg-info
+ttt.egg-info
 media/
 public/
 future/

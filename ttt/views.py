@@ -33,6 +33,7 @@ class Parser(object):
         count = 1
         paginator = []
         res = {}
+        jres = []
         g.go('http://rozetka.com.ua/stabilizers/c144719/')
 
         for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/span'):
@@ -51,12 +52,10 @@ class Parser(object):
             res[key] = value
 
         print(res['Электромир Volter СНПТО 18пт'])
-        self.result = res
+        for i in list(filter(lambda v: v[1] <= self.maxprice and v[1] >= self.minprice, list(res.items()),)):
+            jres.append(dict([("name", i[0]), ("price", i[1])]))
+        self.result = jres
 
-
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    return {'project': 'ttt'}
 
 @view_config(route_name='sec')
 def sec_view(request):
@@ -67,18 +66,23 @@ def sec_view(request):
         response = Response()
         response.set_cookie('pricefrom', value=pricefrom, max_age=3600)
         response.set_cookie('priceto', value=priceto, max_age=3600)
-        return HTTPFound(location = "/", headers=response.headers)
+        return HTTPFound(location="/res/", headers=response.headers)
     else:
         return render_to_response('templates/two.pt', {}, request)
 
 
 @view_config(route_name='res')
 def res_view(request):
+    return render_to_response('templates/res.pt', {}, request)
+
+
+@view_config(route_name='jres', renderer='json')
+def json_view(request):
     if 'priceto' in request.cookies and 'pricefrom' in request.cookies:
         priceto = request.cookies['priceto']
         pricefrom = request.cookies['pricefrom']
         pars = Parser(pricefrom, priceto)
-        return render_to_response('templates/res.pt', {'priceto': priceto,
-                                                       'pricefrom': pricefrom,
-                                                       'pars': pars.result},
-                                  request)
+        r = Response()
+        r.content_type = 'application/json'
+        r.charset = 'utf8'
+        return pars.result

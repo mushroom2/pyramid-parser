@@ -44,4 +44,5 @@ class Parser(object):
         print(res['Электромир Volter СНПТО 18пт'])
         return print(res)
 
+
 p = Parser(4, 1)
