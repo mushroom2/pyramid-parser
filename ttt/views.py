@@ -24,7 +24,7 @@ class Parser(object):
             self.rozparse()
 
     def wrog_operation(self):
-        self.result = 'something was wrong'
+        self.result = [{"name": "ERROR Invslid input", "price": 0}]
 
     def rozparse(self):
         g = Grab()
