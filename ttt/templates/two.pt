@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-
-
-<!DOCTYPE html>
 <html lang="${request.locale_name}">
   <head>
     <meta charset="utf-8">
@@ -28,7 +25,18 @@
   <body>
 
   <div id="myform">
-  <form class="form-inline" method="POST" action="/">
+  <form class="form-inline" method="POST" action="/" >
+      <div  class="form-group.col-md-12" id="lab">
+          <label for="myselect"> Select category:</label>
+            <select id="myselect" name="myselect">
+                <option value="http://rozetka.com.ua/stabilizers/c144719/">Стабілізатори</option>
+                <option value="http://rozetka.com.ua/servers/c125754/">Сервери</option>
+                <option value="http://hard.rozetka.com.ua/monitors/c80089/">Монітори</option>
+                <option value="http://rozetka.com.ua/bicycles/c83884/">Біциглі</option>
+                <option value="http://rozetka.com.ua/telescopes/c89847/">Телескопи</option>
+                <option value="http://rozetka.com.ua/rucksacks/c82445/">Рюкзаки</option>
+            </select>
+      </div>
   <div class="form-group">
     <label for="exampleInputName2"> Price from</label>
     <input type="text" class="form-control" id="exampleInputName2" name="pricefrom" placeholder="Price From">

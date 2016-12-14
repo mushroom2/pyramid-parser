@@ -24,7 +24,7 @@ class Parser(object):
         res = {}
         g.go('http://rozetka.com.ua/stabilizers/c144719/')
 
-        for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/span'):
+        for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/a'):
             paginator.append(i.text())
 
 
@@ -45,4 +45,4 @@ class Parser(object):
         return print(res)
 
 
-p = Parser(4, 1)
+p = Parser(1, 4)

@@ -9,11 +9,12 @@ from urllib import parse
 
 
 class Parser(object):
-    def __init__(self, minprice, maxprice):
+    def __init__(self, minprice, maxprice, category):
         self.result = None
         try:
             self.minprice = int(minprice)
             self.maxprice = int(maxprice)
+            self.category = category
         except ValueError:
             self.wrog_operation()
             self.minprice = 1
@@ -34,24 +35,28 @@ class Parser(object):
         paginator = []
         res = {}
         jres = []
-        g.go('http://rozetka.com.ua/stabilizers/c144719/')
+        g.go(self.category)
 
-        for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/span'):
+        for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/a'):
             paginator.append(i.text())
 
         while count < (int(paginator[-1])+1):
-            g.go('http://rozetka.com.ua/stabilizers/c144719/page=' + str(count) + '/')
+            g.go(self.category + 'page=' + str(count) + '/')
             for title in g.doc.select('//div[@class="g-i-tile-i-box-desc"]/div[@class="g-i-tile-i-title clearfix"]'):
                 names.append(title.text())
             for i in g.doc.select('//div[@class="g-i-tile-i-box-desc"]'):
-                prices.append(json.loads(parse.unquote(i.text().split('"')[1]))['price'])
+                try:
+                    prices.append(json.loads(parse.unquote(i.text().split('"')[1]))["price"])
+                except ValueError:
+                    prices.append(0)
+                except TypeError:
+                    prices.append(0)
             print(count)
             count += 1
 
         for key, value in zip(names, prices):
             res[key] = value
 
-        print(res['Электромир Volter СНПТО 18пт'])
         for i in list(filter(lambda v: v[1] <= self.maxprice and v[1] >= self.minprice, list(res.items()),)):
             jres.append(dict([("name", i[0]), ("price", i[1])]))
         self.result = jres
@@ -63,7 +68,9 @@ def sec_view(request):
 
         pricefrom = request.params['pricefrom']
         priceto = request.params['priceto']
+        cat = request.params['myselect']
         response = Response()
+        response.set_cookie('cat', value=cat, max_age=3600)
         response.set_cookie('pricefrom', value=pricefrom, max_age=3600)
         response.set_cookie('priceto', value=priceto, max_age=3600)
         return HTTPFound(location="/res/", headers=response.headers)
@@ -79,9 +86,10 @@ def res_view(request):
 @view_config(route_name='jres', renderer='json')
 def json_view(request):
     if 'priceto' in request.cookies and 'pricefrom' in request.cookies:
+        cat = request.cookies['cat']
         priceto = request.cookies['priceto']
         pricefrom = request.cookies['pricefrom']
-        pars = Parser(pricefrom, priceto)
+        pars = Parser(pricefrom, priceto, cat)
         r = Response()
         r.content_type = 'application/json'
         r.charset = 'utf8'
