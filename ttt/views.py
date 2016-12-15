@@ -40,15 +40,22 @@ class Parser(object):
         for i in g.doc.select('//ul[@name="paginator"]/li[@class="paginator-catalog-l-i"]/a'):
             paginator.append(i.text())
 
+        if not paginator:
+            for k in g.doc.select('//ul[@name="paginator"]'):
+                paginator.append(k.text())
+
         while count < (int(paginator[-1])+1):
             g.go(self.category + 'page=' + str(count) + '/')
             for title in g.doc.select('//div[@class="g-i-tile-i-box-desc"]/div[@class="g-i-tile-i-title clearfix"]'):
                 names.append(title.text())
-            for i in g.doc.select('//div[@class="g-i-tile-i-box-desc"]'):
+            for scr in g.doc.select('//div[@class="g-i-tile-i-box-desc"]'):
                 try:
-                    prices.append(json.loads(parse.unquote(i.text().split('"')[1]))["price"])
+                    prices.append(json.loads(parse.unquote(scr.text().split('"')[1]))["price"])
                 except ValueError:
-                    prices.append(0)
+                    try:
+                        prices.append(json.loads(parse.unquote(scr.text().split('"')[2]))["price"])
+                    except ValueError:
+                        prices.append(0)
                 except TypeError:
                     prices.append(0)
             print(count)
@@ -75,12 +82,12 @@ def sec_view(request):
         response.set_cookie('priceto', value=priceto, max_age=3600)
         return HTTPFound(location="/res/", headers=response.headers)
     else:
-        return render_to_response('templates/two.pt', {}, request)
+        return render_to_response('templates/two.mako', {}, request)
 
 
 @view_config(route_name='res')
 def res_view(request):
-    return render_to_response('templates/res.pt', {}, request)
+    return render_to_response('templates/res.mako', {}, request)
 
 
 @view_config(route_name='jres', renderer='json')
